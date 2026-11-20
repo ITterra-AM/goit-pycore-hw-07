@@ -102,7 +102,7 @@ class AddressBook(UserDict):
 
             days_until_birthday = (birthday_this_year - today).days
 
-            if days_until_birthday < 7:
+            if days_until_birthday <= 7:
                 congrat_date = birthday_this_year
 
                 if congrat_date.weekday() == 5:
@@ -114,9 +114,7 @@ class AddressBook(UserDict):
 
         return result
 
-if __name__ == "__main__":
-    # Створення нової адресної книги
-    book = AddressBook()
+
 def input_error(func):
     def wrapper(*args, **kwargs):
         try:
@@ -191,6 +189,13 @@ def show_birthday(args, book: AddressBook):
         return "Birthday not found."
     return f"{name}: {record.birthday.value.strftime('%d.%m.%Y')}"
 
+@input_error
+def birthdays(args, book: AddressBook):
+    result = book.get_upcoming_birthdays()
+    if not result:
+        return "On next week not have birthday"
+    return "\n".join(f"{p['name']}: {p['congratulation_date']}" for p in result)
+
 def main():
     book = AddressBook()
     print("Welcome to the assistant bot!")
@@ -215,6 +220,8 @@ def main():
             print(add_birthday(args, book))
         elif command == "show-birthday":
             print(show_birthday(args, book))
+        elif command == "birthdays":
+            print(birthdays(args, book))
         elif command == "help":
             print("Available commands:")
             print("  hello - Greet the bot")
@@ -224,6 +231,7 @@ def main():
             print("  all - Show all contacts")
             print("  add-birthday <name> <birthday> - add a new birthday date")
             print("  show-birthday <name> - show the birthday date of a contact")
+            print("  birthdays - show the birthdays on next week of a contact")
             print("  help - Show available commands")
             print("  close/exit - Exit the program")
         else:
